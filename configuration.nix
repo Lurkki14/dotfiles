@@ -4,6 +4,9 @@
 
 { config, pkgs, ... }:
 
+let
+  unstable = import <nixos-unstable> { };
+in
 {
   imports =
     [ # Include the results of the hardware scan.
@@ -17,24 +20,36 @@
 
   environment.systemPackages = with pkgs; [
     # Misc programs
-    gimp libreoffice steam mumble earlyoom dfeet nix-index firefox keepassxc tmux
+    gimp libreoffice steam mumble earlyoom dfeet nix-index firefox keepassxc tmux wireshark
     # Development
-    git ghc cabal2nix cabal-install nodejs # For coc-nvim
-    haskellPackages.haskell-language-server
+    git ghc gdb cabal2nix cabal-install nodejs # For coc-nvim
+    android-studio
+    unstable.haskellPackages.haskell-language-server
     (neovim.override {
       configure = {
         packages.myPlugins = with pkgs.vimPlugins; {
-          start = [ coc-nvim ];
+          start = [ coc-nvim nerdtree ];
           opt = [];
         };
         customRC = ''
           "
+          function! s:check_back_space() abort
+            let col = col('.') - 1
+            return !col || getline('.')[col - 1]  =~ '\s'
+          endfunction
+
+          inoremap <silent><expr> <Tab>
+            \ pumvisible() ? "\<C-n>" :
+            \ <SID>check_back_space() ? "\<Tab>" :
+            \ coc#refresh()
           autocmd Filetype haskell setlocal expandtab tabstop=2 shiftwidth=2 softtabstop=2
           "
         '';
       };
      })
    ];
+
+  programs.wireshark.enable = true;
 
   nixpkgs.config.allowUnfree = true;
   # Use the GRUB 2 boot loader.
@@ -57,6 +72,7 @@
   # replicates the default behaviour.
   networking.useDHCP = false;
   networking.interfaces.enp4s0.useDHCP = true;
+  networking.networkmanager.enable = true;
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
@@ -73,7 +89,9 @@
   services.xserver.enable = true;
   services.xserver.displayManager.sddm.enable = true;
   services.xserver.desktopManager.plasma5.enable = true;
+  services.xserver.videoDrivers = [ "nvidia" ];
   services.earlyoom.enable = true;
+  services.flatpak.enable = true;
 
   # Configure keymap in X11
   # services.xserver.layout = "us";
@@ -95,7 +113,7 @@
   users.users.jussi = {
     isNormalUser = true;
     home = "/home/jussi";
-    extraGroups = [ "wheel" "networkmanager" ]; # Enable ‘sudo’ for the user.
+    extraGroups = [ "wheel" "networkmanager" "wireshark" ]; # Enable ‘sudo’ for the user.
   };
 
   # List packages installed in system profile. To search, run:
