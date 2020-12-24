@@ -18,17 +18,24 @@ in
     #PS1 = "\[\033[1;32m\][\[\e]0;\u@\h: \w\a\]\u@\h:\w]\$\[\033[0m\]";
   #};
 
+  # Native steam
+  # nixpkgs.config.allowBroken = true;
+
   environment.systemPackages = with pkgs; [
     # Misc programs
-    gimp libreoffice steam mumble earlyoom dfeet nix-index firefox keepassxc tmux wireshark
+    filelight gimp kcalc libreoffice mumble earlyoom dfeet nix-index firefox keepassxc tmux wireshark
+    glxinfo
+    steam
+    #(steam.override { extraPkgs = pkgs: [ glxinfo xorg.libxcb ]; })
     # Development
     git ghc gdb cabal2nix cabal-install nodejs # For coc-nvim
     android-studio
     unstable.haskellPackages.haskell-language-server
+    unstable.rnix-lsp
     (neovim.override {
       configure = {
         packages.myPlugins = with pkgs.vimPlugins; {
-          start = [ coc-nvim nerdtree ];
+          start = [ coc-nvim nerdtree gruvbox ];
           opt = [];
         };
         customRC = ''
@@ -43,12 +50,20 @@ in
             \ <SID>check_back_space() ? "\<Tab>" :
             \ coc#refresh()
           autocmd Filetype haskell setlocal expandtab tabstop=2 shiftwidth=2 softtabstop=2
+	  set mouse=a
+	  colorscheme gruvbox
+	  " Make cuts go to black hole since cutting is rarer than deletion
+	  nnoremap d "_d
+	  vnoremap d "_d
+	  \" hi Pmenu ctermbg=Gray
+	  \" hi NormalFloat ctermbg=Gray
           "
         '';
       };
      })
    ];
 
+  programs.steam.enable = true;
   programs.wireshark.enable = true;
 
   nixpkgs.config.allowUnfree = true;
