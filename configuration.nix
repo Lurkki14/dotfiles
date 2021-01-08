@@ -5,13 +5,24 @@
 { config, pkgs, ... }:
 
 let
-  unstable = import <nixos-unstable> { };
+  fromNixpkgsCommit = commit: fetchTarball ("https://github.com/NixOS/nixpkgs/archive/" + commit + ".tar.gz");
+  unstable = import (fromNixpkgsCommit "ea3638a3fb262d3634be7e4c2aa3d4e9474ae157") {};
+
+  openrgb-rules = builtins.fetchurl {
+    url = "https://gitlab.com/CalcProgrammer1/OpenRGB/-/raw/master/60-openrgb.rules";
+  };
 in
 {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
     ];
+  nix = {
+    package = pkgs.nixFlakes;
+    extraOptions = ''
+      experimental-features = nix-command flakes
+    '';
+  };
 
   #environment.variables = {
     # original: \n\[\033[1;32m\][\[\e]0;\u@\h: \w\a\]\u@\h:\w]\$\[\033[0m\]
@@ -21,21 +32,37 @@ in
   # Native steam
   # nixpkgs.config.allowBroken = true;
 
+  boot.kernelModules = [ "i2c-dev" "i2c-piix4" ];
+  #services.udev.extraRules = builtins.readFile openrgb-rules;
+
   environment.systemPackages = with pkgs; [
     # Misc programs
-    filelight gimp kcalc libreoffice mumble earlyoom dfeet nix-index firefox keepassxc tmux wireshark
-    glxinfo
-    steam
+    filelight gimp kcalc libreoffice mumble earlyoom dfeet nix-index firefox keepassxc wireshark vlc tmux
+    #(tmux.override {
+      #extraTmuxConf = ''
+        #set -g mouse=on
+      #'';
+    #})
+    glxinfo qutebrowser 
+    unstable.openrgb
+    #steam
     #(steam.override { extraPkgs = pkgs: [ glxinfo xorg.libxcb ]; })
     # Development
-    git ghc gdb cabal2nix cabal-install nodejs # For coc-nvim
+    git gdb cabal2nix cabal-install nodejs # For coc-nvim
     android-studio
+    # ghc from unstable so it's in sync with HLS
+    unstable.ghc unstable.nix-bundle
+    #ghc
     unstable.haskellPackages.haskell-language-server
+    #(unstable.haskellPackages.haskell-language-server.overrideAttrs (defAttrs: {
+      #buildInputs = defAttrs.buildInputs ++ [ ghc ];
+    #}))
     unstable.rnix-lsp
     (neovim.override {
       configure = {
         packages.myPlugins = with pkgs.vimPlugins; {
-          start = [ coc-nvim nerdtree gruvbox ];
+	  # Seems vim-nix includes filetype detection
+          start = [ coc-nvim nerdtree gruvbox vim-nix ];
           opt = [];
         };
         customRC = ''
@@ -55,15 +82,13 @@ in
 	  " Make cuts go to black hole since cutting is rarer than deletion
 	  nnoremap d "_d
 	  vnoremap d "_d
-	  \" hi Pmenu ctermbg=Gray
-	  \" hi NormalFloat ctermbg=Gray
           "
         '';
       };
      })
    ];
 
-  programs.steam.enable = true;
+  #programs.steam.enable = true;
   programs.wireshark.enable = true;
 
   nixpkgs.config.allowUnfree = true;
