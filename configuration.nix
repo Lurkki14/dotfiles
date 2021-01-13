@@ -8,6 +8,18 @@ let
   fromNixpkgsCommit = commit: fetchTarball ("https://github.com/NixOS/nixpkgs/archive/" + commit + ".tar.gz");
   unstable = import (fromNixpkgsCommit "ea3638a3fb262d3634be7e4c2aa3d4e9474ae157") {};
 
+  home-manager = builtins.fetchGit {
+    url = "https://github.com/nix-community/home-manager.git";
+    rev = "22f6736e628958f05222ddaadd7df7818fe8f59d";
+    ref = "release-20.09";
+  };
+
+  dotfiles = builtins.fetchGit {
+    url = "https://github.com/Lurkki14/dotfiles";
+    ref = "master";
+    rev = "d31bd69538c1bc8e12057736864ff0c3f9edbed5";
+  };
+
   openrgb-rules = builtins.fetchurl {
     url = "https://gitlab.com/CalcProgrammer1/OpenRGB/-/raw/master/60-openrgb.rules";
   };
@@ -16,6 +28,7 @@ in
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      (import "${home-manager}/nixos")
     ];
   nix = {
     package = pkgs.nixFlakes;
@@ -32,12 +45,17 @@ in
   # Native steam
   # nixpkgs.config.allowBroken = true;
 
+  home-manager.users.jussi = {
+    xdg.configFile."nvim/coc-settings.json".source = "${dotfiles}/coc-settings.json";
+  };
+
   boot.kernelModules = [ "i2c-dev" "i2c-piix4" ];
   #services.udev.extraRules = builtins.readFile openrgb-rules;
 
   environment.systemPackages = with pkgs; [
     # Misc programs
     filelight gimp kcalc libreoffice mumble earlyoom dfeet nix-index firefox keepassxc wireshark vlc tmux
+    gwenview
     #(tmux.override {
       #extraTmuxConf = ''
         #set -g mouse=on
