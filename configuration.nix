@@ -17,7 +17,7 @@ let
   dotfiles = builtins.fetchGit {
     url = "https://github.com/Lurkki14/dotfiles";
     ref = "master";
-    rev = "d31bd69538c1bc8e12057736864ff0c3f9edbed5";
+    rev = "8bec4710926729c78464abc562f7cc76a1424cf3";
   };
 
   openrgb-rules = builtins.fetchurl {
@@ -54,27 +54,17 @@ in
 
   environment.systemPackages = with pkgs; [
     # Misc programs
-    filelight gimp kcalc libreoffice mumble earlyoom dfeet nix-index firefox keepassxc wireshark vlc tmux
+    filelight gimp kcalc libreoffice mumble earlyoom dfeet nix-index firefox keepassxc wireshark vlc
     gwenview
-    #(tmux.override {
-      #extraTmuxConf = ''
-        #set -g mouse=on
-      #'';
-    #})
+    tmux
     glxinfo qutebrowser 
-    unstable.openrgb
-    #steam
-    #(steam.override { extraPkgs = pkgs: [ glxinfo xorg.libxcb ]; })
+    unstable.openrgb sgtpuzzles
     # Development
     git gdb cabal2nix cabal-install nodejs # For coc-nvim
-    android-studio
+    android-studio gcc manpages
     # ghc from unstable so it's in sync with HLS
     unstable.ghc unstable.nix-bundle
-    #ghc
-    unstable.haskellPackages.haskell-language-server
-    #(unstable.haskellPackages.haskell-language-server.overrideAttrs (defAttrs: {
-      #buildInputs = defAttrs.buildInputs ++ [ ghc ];
-    #}))
+    unstable.haskellPackages.haskell-language-server clang-tools
     unstable.rnix-lsp
     (neovim.override {
       configure = {
@@ -106,7 +96,7 @@ in
      })
    ];
 
-  #programs.steam.enable = true;
+  programs.tmux.extraConfig = ''set -g mouse on'';
   programs.wireshark.enable = true;
 
   nixpkgs.config.allowUnfree = true;
