@@ -2,11 +2,18 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, super, ... }:
 
 let
   fromNixpkgsCommit = commit: fetchTarball ("https://github.com/NixOS/nixpkgs/archive/" + commit + ".tar.gz");
   unstable = import (fromNixpkgsCommit "ea3638a3fb262d3634be7e4c2aa3d4e9474ae157") {};
+  # Export this package set as a channel so I can do nix-shell -p hello '<unstable>'
+
+  config.nixpkgs.config = {
+    pacakgeOverrides = pkgs: rec {
+      unstableChan = unstable;
+    };
+  };
 
   home-manager = builtins.fetchGit {
     url = "https://github.com/nix-community/home-manager.git";
@@ -23,6 +30,21 @@ let
   openrgb-rules = builtins.fetchurl {
     url = "https://gitlab.com/CalcProgrammer1/OpenRGB/-/raw/master/60-openrgb.rules";
   };
+
+  linux-tkg = builtins.fetchGit {
+    url = "https://github.com/Frogging-Family/linux-tkg";
+    rev = "dd7f86d87b14d04105296259805bf68a5c947a39";
+    ref = "master";
+  };
+
+  /*tkg-kernel = super.linuxManualConfig {
+    inherit (super) stdenv hostPlatform;
+    inherit (super.linux_5_4) src;
+    version = "${super.linux_5_4.version}-tkg";
+
+    configfile = "${linux-tkg}/linux-tkg-config/5.4/config.x86_64";
+    allowImportFromDerivation = true;
+  };*/
 in
 {
   imports =
@@ -30,35 +52,63 @@ in
       ./hardware-configuration.nix
       (import "${home-manager}/nixos")
     ];
-  nix = {
-    package = pkgs.nixFlakes;
-    extraOptions = ''
-      experimental-features = nix-command flakes
-    '';
-  };
+  
+  nixpkgs.overlays = [
+    (self: super: {
+      linux-tkg = super.linuxManualConfig {
+        inherit (super) stdenv /*hostPlatform*/;
+        inherit (super.linux_5_4) src;
+        version = "${super.linux_5_4.version}-tkg";
 
-  #environment.variables = {
+        configfile = "${linux-tkg}/linux-tkg-config/5.4/config.x86_64";
+        allowImportFromDerivation = true;
+      };
+    })
+  ];
+  #boot.kernelPackages = pkgs.linux-tkg;
+
+  #nix = {
+    #package = pkgs.nixFlakes;
+    #extraOptions = ''
+      #experimental-features = nix-command flakes
+    #'';
+  #};
+  #boot.kernelPatches = [ {
+    #name = "linux-tkg";
+    #patch = null;
+    #extraConfig = "LOCKUP_DETECTOR y";
+    #patch = builtins.readFile "${linux-tkg}/linux-tkg-patches/5.4/0004-5.4-ck1.patch";
+    #extraConfig = builtins.readFile "${linux-tkg}/linux-tkg-config/5.4/config.x86_64";
+  #} ];
+
+  environment.variables = {
+    # nixpkgs.config.allowUnfree = true; doesn't seem to export this
+    NIXPKGS_ALLOW_UNFREE = "1";
     # original: \n\[\033[1;32m\][\[\e]0;\u@\h: \w\a\]\u@\h:\w]\$\[\033[0m\]
     #PS1 = "\[\033[1;32m\][\[\e]0;\u@\h: \w\a\]\u@\h:\w]\$\[\033[0m\]";
-  #};
+  };
 
   # Native steam
   # nixpkgs.config.allowBroken = true;
-
+  
   home-manager.users.jussi = {
     xdg.configFile."nvim/coc-settings.json".source = "${dotfiles}/coc-settings.json";
   };
 
-  boot.kernelModules = [ "i2c-dev" "i2c-piix4" ];
+  boot.kernelModules = [
+    "i2c-dev"
+    "i2c-piix4"
+    "snd_aloop"
+  ];
   #services.udev.extraRules = builtins.readFile openrgb-rules;
 
   environment.systemPackages = with pkgs; [
     # Misc programs
     filelight gimp kcalc libreoffice mumble earlyoom dfeet nix-index firefox keepassxc wireshark vlc
-    gwenview
+    gwenview kdeApplications.kdeconnect-kde
     tmux
     glxinfo qutebrowser 
-    unstable.openrgb sgtpuzzles
+    unstable.openrgb sgtpuzzles obs-studio pavucontrol
     # Development
     git gdb cabal2nix cabal-install nodejs # For coc-nvim
     android-studio gcc manpages
@@ -70,7 +120,7 @@ in
       configure = {
         packages.myPlugins = with pkgs.vimPlugins; {
 	  # Seems vim-nix includes filetype detection
-          start = [ coc-nvim nerdtree gruvbox vim-nix ];
+          start = [ coc-nvim nerdtree gruvbox vim-nix nerdcommenter ];
           opt = [];
         };
         customRC = ''
@@ -103,14 +153,8 @@ in
   # Use the GRUB 2 boot loader.
   boot.loader.grub.enable = true;
   boot.loader.grub.version = 2;
-  # boot.loader.grub.efiSupport = true;
-  # boot.loader.grub.efiInstallAsRemovable = true;
-  # boot.loader.efi.efiSysMountPoint = "/boot/efi";
   # Define on which hard drive you want to install Grub.
   boot.loader.grub.device = "/dev/sda";
-
-  # networking.hostName = "nixos"; # Define your hostname.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Set your time zone.
   time.timeZone = "Europe/Helsinki";
@@ -121,17 +165,6 @@ in
   networking.useDHCP = false;
   networking.interfaces.enp4s0.useDHCP = true;
   networking.networkmanager.enable = true;
-
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
-  # Select internationalisation properties.
-  # i18n.defaultLocale = "en_US.UTF-8";
-  # console = {
-  #   font = "Lat2-Terminus16";
-  #   keyMap = "us";
-  # };
 
   # Enable the Plasma 5 Desktop Environment.
   services.xserver.enable = true;
@@ -151,7 +184,9 @@ in
   # Enable sound.
   sound.enable = true;
   hardware.pulseaudio.enable = true;
-  hardware.pulseaudio.support32Bit = true; 
+  hardware.pulseaudio.support32Bit = true;
+  #hardware.pulseaudio.extraConfig = "load-module module-echo-cancel";
+
   hardware.opengl.driSupport32Bit = true;
   hardware.opengl.extraPackages32 = with pkgs.pkgsi686Linux; [ libva ];
   # Enable touchpad support (enabled default in most desktopManager).
@@ -163,32 +198,6 @@ in
     home = "/home/jussi";
     extraGroups = [ "wheel" "networkmanager" "wireshark" ]; # Enable ‘sudo’ for the user.
   };
-
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
-  # environment.systemPackages = with pkgs; [
-  #   wget vim
-  #   firefox
-  # ];
-
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
-
-  # List services that you want to enable:
-
-  # Enable the OpenSSH daemon.
-  # services.openssh.enable = true;
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
