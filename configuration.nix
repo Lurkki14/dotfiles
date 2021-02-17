@@ -6,7 +6,7 @@
 
 let
   fromNixpkgsCommit = commit: fetchTarball ("https://github.com/NixOS/nixpkgs/archive/" + commit + ".tar.gz");
-  unstable = import (fromNixpkgsCommit "ea3638a3fb262d3634be7e4c2aa3d4e9474ae157") {};
+  unstable = import (fromNixpkgsCommit "8331390c3a6054067331cea440c772ae5029eb6f") {};
   # Export this package set as a channel so I can do nix-shell -p hello '<unstable>'
 
   config.nixpkgs.config = {
