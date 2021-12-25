@@ -11,6 +11,7 @@
     },
     "clangd": {
       "command": "clangd",
+      "clangd.fallbackFlags": [ "-std=c++17" ],
       "rootPatterns": ["compile_flags.txt", "compile_commands.json"],
       "filetypes": ["c", "cc", "cpp", "c++", "objc", "objcpp"]
     }
