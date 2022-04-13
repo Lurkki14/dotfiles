@@ -6,7 +6,7 @@
 
 let
   fromNixpkgsCommit = commit: fetchTarball ("https://github.com/NixOS/nixpkgs/archive/" + commit + ".tar.gz");
-  unstable = import (fromNixpkgsCommit "8331390c3a6054067331cea440c772ae5029eb6f") {};
+  unstable = import (fromNixpkgsCommit "c473cc8714710179df205b153f4e9fa007107ff9") {};
   # Export this package set as a channel so I can do nix-shell -p hello '<unstable>'
 
   config.nixpkgs.config = {
@@ -24,7 +24,7 @@ let
   dotfiles = builtins.fetchGit {
     url = "https://github.com/Lurkki14/dotfiles";
     ref = "master";
-    rev = "8bec4710926729c78464abc562f7cc76a1424cf3";
+    rev = "5173eb1f0c55299e4f31eaf681146d88533c68b3";
   };
 
   openrgb-rules = builtins.fetchurl {
@@ -67,12 +67,13 @@ in
   ];
   #boot.kernelPackages = pkgs.linux-tkg;
 
-  #nix = {
-    #package = pkgs.nixFlakes;
-    #extraOptions = ''
-      #experimental-features = nix-command flakes
-    #'';
-  #};
+  nix = {
+    package = unstable.pkgs.nixFlakes;
+    extraOptions = ''
+      experimental-features = nix-command flakes
+    '';
+  };
+
   #boot.kernelPatches = [ {
     #name = "linux-tkg";
     #patch = null;
@@ -100,27 +101,54 @@ in
     "i2c-piix4"
     "snd_aloop"
   ];
+
+  boot.binfmt = {
+    emulatedSystems = [ "aarch64-linux" ];
+    #registrations = [ "x86_64-windows" ];
+  };
+
+  fileSystems."/home/jussi/HDD" = {
+    #device = "/dev/sdb6";
+    device = "/dev/disk/by-uuid/22f45770-d4e6-4ee7-8c8b-b578942105ee";
+    #device = "22f45770-d4e6-4ee7-8c8b-b578942105ee";
+    fsType = "btrfs";
+  };
+
+  #environment.etc."dbus-1/foo".text = "test";
+  #environment.etc."dbus-1/system.d".text = (readFile "/home/jussi/ohj/tuxclocker/result/share/dbus-1/system.d/org.tuxclocker.conf");
+
   #services.udev.extraRules = builtins.readFile openrgb-rules;
 
+  #services.dbus.packages = [ "/home/jussi/ohj/tuxclocker/result" ];
+
+  #services.dbus.packages = [ "/home/jussi/ohj/tuxclocker/inst" ];
+
   environment.systemPackages = with pkgs; [
+    # Needs libvirtd
+    virt-manager
     # Misc programs
     filelight gimp kcalc libreoffice mumble earlyoom dfeet nix-index firefox keepassxc wireshark vlc
-    gwenview kdeApplications.kdeconnect-kde
+    gwenview kdeApplications.kdeconnect-kde partition-manager ark
+    # Qt Creator
+    unstable.qtcreator cmake gnumake unstable.qt512.full
     tmux
     glxinfo qutebrowser 
-    unstable.openrgb sgtpuzzles obs-studio pavucontrol
+    unstable.openrgb sgtpuzzles obs-studio pavucontrol unstable.mpv
     # Development
+    #unstable.libsForQt5.full unstable.qtcreator gnumake
     git gdb cabal2nix cabal-install nodejs # For coc-nvim
-    android-studio gcc manpages
+    android-studio gcc manpages nix-prefetch-git
     # ghc from unstable so it's in sync with HLS
     unstable.ghc unstable.nix-bundle
     unstable.haskellPackages.haskell-language-server clang-tools
     unstable.rnix-lsp
-    (neovim.override {
+    # For neovim clipboard
+    xclip
+    (unstable.neovim.override {
       configure = {
-        packages.myPlugins = with pkgs.vimPlugins; {
+        packages.myPlugins = with unstable.vimPlugins; {
 	  # Seems vim-nix includes filetype detection
-          start = [ coc-nvim nerdtree gruvbox vim-nix nerdcommenter ];
+          start = [ coc-nvim coc-java nerdtree gruvbox vim-nix nerdcommenter /*auto-session*/ ];
           opt = [];
         };
         customRC = ''
@@ -145,6 +173,8 @@ in
       };
      })
    ];
+
+  virtualisation.libvirtd.enable = true;
 
   programs.tmux.extraConfig = ''set -g mouse on'';
   programs.wireshark.enable = true;
@@ -171,7 +201,19 @@ in
   services.xserver.displayManager.sddm.enable = true;
   services.xserver.desktopManager.plasma5.enable = true;
   services.xserver.videoDrivers = [ "nvidia" ];
-  services.earlyoom.enable = true;
+  
+  services.earlyoom = {
+    enable = true;
+    enableNotifications = true;
+    freeMemThreshold = 2;
+  };
+
+  zramSwap = {
+    enable = true;
+    numDevices = 1;
+    memoryPercent = 70;
+  };
+
   services.flatpak.enable = true;
 
   # Configure keymap in X11
@@ -189,6 +231,7 @@ in
 
   hardware.opengl.driSupport32Bit = true;
   hardware.opengl.extraPackages32 = with pkgs.pkgsi686Linux; [ libva ];
+  hardware.opengl.extraPackages = with pkgs; [ vaapiVdpau libvdpau-va-gl ];
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
