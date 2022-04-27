@@ -93,7 +93,8 @@ in
   # nixpkgs.config.allowBroken = true;
   
   home-manager.users.jussi = {
-    xdg.configFile."nvim/coc-settings.json".source = "${dotfiles}/coc-settings.json";
+    #xdg.configFile."nvim/coc-settings.json".source = "${dotfiles}/coc-settings.json";
+    xdg.configFile."nvim/coc-settings.json".source = ./coc-settings.json;
   };
 
   boot.kernelModules = [
