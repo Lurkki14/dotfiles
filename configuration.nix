@@ -202,7 +202,15 @@ in
   services.xserver.displayManager.sddm.enable = true;
   services.xserver.desktopManager.plasma5.enable = true;
   services.xserver.videoDrivers = [ "nvidia" ];
-  
+
+  services.xserver.config = ''
+    Section "Device"
+      Driver "nvidia"
+      Option "Coolbits" "31"
+      Identifier "Device-nvidia[0]"
+    EndSection
+  '';
+
   services.earlyoom = {
     enable = true;
     enableNotifications = true;
