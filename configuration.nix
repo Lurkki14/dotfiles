@@ -5,8 +5,10 @@
 { config, pkgs, super, ... }:
 
 let
-  fromNixpkgsCommit = commit: fetchTarball ("https://github.com/NixOS/nixpkgs/archive/" + commit + ".tar.gz");
-  unstable = import (fromNixpkgsCommit "c473cc8714710179df205b153f4e9fa007107ff9") {};
+  unstableCommit = "c473cc8714710179df205b153f4e9fa007107ff9";
+  unstableUrl = "https://github.com/NixOS/nixpkgs/archive/" + unstableCommit + ".tar.gz";
+  unstableTarball = fetchTarball unstableUrl;
+  unstable = import unstableTarball {};
   # Export this package set as a channel so I can do nix-shell -p hello '<unstable>'
 
   config.nixpkgs.config = {
@@ -177,6 +179,9 @@ in
 
   virtualisation.libvirtd.enable = true;
 
+  programs.bash.shellAliases = {
+    withUnstable = "NIX_PATH=nixpkgs=${unstableUrl}";
+  };
   programs.tmux.extraConfig = ''set -g mouse on'';
   programs.wireshark.enable = true;
 
@@ -210,6 +215,7 @@ in
       Identifier "Device-nvidia[0]"
     EndSection
   '';
+  #Option “RegistryDwords” “PowerMizerEnable=0x1; PerfLevelSrc=0x3333; PowerMizerDefault=0x3"
 
   services.earlyoom = {
     enable = true;
