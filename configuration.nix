@@ -5,7 +5,8 @@
 { config, pkgs, super, ... }:
 
 let
-  unstableCommit = "c473cc8714710179df205b153f4e9fa007107ff9";
+  unstableCommit = "7527d53617486517f4a6ce8f252ef549139c9633";
+  #unstableCommit = "c473cc8714710179df205b153f4e9fa007107ff9";
   unstableUrl = "https://github.com/NixOS/nixpkgs/archive/" + unstableCommit + ".tar.gz";
   unstableTarball = fetchTarball unstableUrl;
   unstable = import unstableTarball {};
@@ -138,6 +139,7 @@ in
     glxinfo qutebrowser 
     unstable.openrgb sgtpuzzles obs-studio pavucontrol unstable.mpv
     # Development
+    direnv
     #unstable.libsForQt5.full unstable.qtcreator gnumake
     git gdb cabal2nix cabal-install nodejs # For coc-nvim
     android-studio gcc manpages nix-prefetch-git
@@ -179,9 +181,12 @@ in
 
   virtualisation.libvirtd.enable = true;
 
-  programs.bash.shellAliases = {
-    withUnstable = "NIX_PATH=nixpkgs=${unstableUrl}";
-  };
+  programs.bash = {
+    interactiveShellInit = ''eval "$(direnv hook bash)"'';
+    shellAliases = {
+      withUnstable = "NIX_PATH=nixpkgs=${unstableUrl}";
+    };
+  }; 
   programs.tmux.extraConfig = ''set -g mouse on'';
   programs.wireshark.enable = true;
 
