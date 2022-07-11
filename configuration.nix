@@ -131,7 +131,8 @@ in
     # Needs libvirtd
     virt-manager
     # Misc programs
-    filelight gimp kcalc libreoffice mumble earlyoom dfeet nix-index firefox keepassxc wireshark vlc
+    unstable.firefox
+    filelight gimp kcalc libreoffice mumble earlyoom dfeet nix-index keepassxc wireshark vlc
     gwenview kdeApplications.kdeconnect-kde partition-manager ark
     # Qt Creator
     unstable.qtcreator cmake gnumake unstable.qt512.full
