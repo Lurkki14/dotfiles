@@ -11,7 +11,10 @@
     },
     "clangd": {
       "command": "clangd",
-      "args": [ "-header-insertion=never" ],
+      "args": [
+	      "-header-insertion=never",
+	      "--completion-style=detailed"
+      ],
       "clangd.fallbackFlags": [ "-std=c++17", "-header-insertion=never" ],
       "rootPatterns": ["compile_flags.txt", "compile_commands.json"],
       "filetypes": ["c", "cc", "cpp", "c++", "objc", "objcpp"]
