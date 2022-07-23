@@ -159,26 +159,7 @@ in
           start = [ coc-nvim coc-java nerdtree gruvbox vim-nix nerdcommenter /*auto-session*/ ];
           opt = [];
         };
-        customRC = ''
-          "
-          function! s:check_back_space() abort
-            let col = col('.') - 1
-            return !col || getline('.')[col - 1]  =~ '\s'
-          endfunction
-
-          inoremap <silent><expr> <Tab>
-            \ pumvisible() ? "\<C-n>" :
-            \ <SID>check_back_space() ? "\<Tab>" :
-            \ coc#refresh()
-          autocmd Filetype haskell setlocal expandtab tabstop=2 shiftwidth=2 softtabstop=2
-	  set mouse=a
-	  colorscheme gruvbox
-	  " Make cuts go to black hole since cutting is rarer than deletion
-	  nnoremap d "_d
-	  vnoremap d "_d
-          "
-          '';
-        #customRC = (builtins.readFile ./nvimrc);
+        customRC = (builtins.readFile ./nvimrc);
       };
      })
    ];
