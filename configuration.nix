@@ -137,13 +137,15 @@ in
     # Qt Creator
     unstable.qtcreator cmake gnumake unstable.qt512.full
     tmux
+    # notify-send
+    libnotify
     glxinfo qutebrowser 
     unstable.openrgb sgtpuzzles obs-studio pavucontrol unstable.mpv
     # Development
     direnv
     #unstable.libsForQt5.full unstable.qtcreator gnumake
     git gdb cabal2nix cabal-install nodejs # For coc-nvim
-    android-studio gcc manpages nix-prefetch-git
+    android-studio gcc manpages nix-prefetch-git ccache
     # ghc from unstable so it's in sync with HLS
     unstable.ghc unstable.nix-bundle
     unstable.haskellPackages.haskell-language-server clang-tools
@@ -175,7 +177,8 @@ in
 	  nnoremap d "_d
 	  vnoremap d "_d
           "
-        '';
+          '';
+        #customRC = (builtins.readFile ./nvimrc);
       };
      })
    ];
