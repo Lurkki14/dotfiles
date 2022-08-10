@@ -8,6 +8,7 @@ inoremap <silent><expr> <Tab>
 \ <SID>check_back_space() ? "\<Tab>" :
 \ coc#refresh()
 autocmd Filetype haskell setlocal expandtab tabstop=2 shiftwidth=2 softtabstop=2
+autocmd Filetype qml setlocal expandtab tabstop=4 shiftwidth=4 softtabstop=4
 set statusline=%<%f\ %h%m%r%=%-14.(%l,%c%V%)\ %{&filetype}\ %P
 set mouse=a
 colorscheme gruvbox
