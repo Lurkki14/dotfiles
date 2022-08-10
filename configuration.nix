@@ -145,7 +145,7 @@ in
     direnv
     #unstable.libsForQt5.full unstable.qtcreator gnumake
     git gdb cabal2nix cabal-install nodejs # For coc-nvim
-    android-studio gcc manpages nix-prefetch-git ccache
+    android-studio gcc manpages nix-prefetch-git ccache entr
     # ghc from unstable so it's in sync with HLS
     unstable.ghc unstable.nix-bundle
     unstable.haskellPackages.haskell-language-server clang-tools
