@@ -132,7 +132,7 @@ in
     virt-manager
     # Misc programs
     unstable.firefox
-    filelight gimp kcalc libreoffice mumble earlyoom dfeet nix-index keepassxc wireshark vlc
+    filelight gimp kcalc libreoffice mumble earlyoom dfeet unstable.nix-index keepassxc wireshark vlc
     gwenview kdeApplications.kdeconnect-kde partition-manager ark
     # Qt Creator
     unstable.qtcreator cmake gnumake unstable.qt512.full
