@@ -9,14 +9,7 @@ let
   #unstableCommit = "c473cc8714710179df205b153f4e9fa007107ff9";
   unstableUrl = "https://github.com/NixOS/nixpkgs/archive/" + unstableCommit + ".tar.gz";
   unstableTarball = fetchTarball unstableUrl;
-  unstable = import unstableTarball {};
-  # Export this package set as a channel so I can do nix-shell -p hello '<unstable>'
-
-  config.nixpkgs.config = {
-    pacakgeOverrides = pkgs: rec {
-      unstableChan = unstable;
-    };
-  };
+  unstable = (import unstableTarball) {};
 
   home-manager = builtins.fetchGit {
     url = "https://github.com/nix-community/home-manager.git";
@@ -34,11 +27,11 @@ let
     url = "https://gitlab.com/CalcProgrammer1/OpenRGB/-/raw/master/60-openrgb.rules";
   };
 
-  linux-tkg = builtins.fetchGit {
+  /*linux-tkg = builtins.fetchGit {
     url = "https://github.com/Frogging-Family/linux-tkg";
     rev = "dd7f86d87b14d04105296259805bf68a5c947a39";
     ref = "master";
-  };
+  };*/
 
   /*tkg-kernel = super.linuxManualConfig {
     inherit (super) stdenv hostPlatform;
@@ -56,10 +49,16 @@ in
       (import "${home-manager}/nixos")
     ];
   
-  nixpkgs.overlays = [
+  # Use the pinned nixpkgs in nix CLI commands
+  nix.nixPath = [
+    #"nixpkgs=${toString pkgs.path}"
+    "nixpkgs=https://github.com/NixOS/nixpkgs/archive/6c6409e965a6c883677be7b9d87a95fab6c3472e.tar.gz"
+  ];
+
+  /*nixpkgs.overlays = [
     (self: super: {
       linux-tkg = super.linuxManualConfig {
-        inherit (super) stdenv /*hostPlatform*/;
+        inherit (super) stdenv hostPlatform;
         inherit (super.linux_5_4) src;
         version = "${super.linux_5_4.version}-tkg";
 
@@ -67,11 +66,11 @@ in
         allowImportFromDerivation = true;
       };
     })
-  ];
+  ];*/
   #boot.kernelPackages = pkgs.linux-tkg;
 
   nix = {
-    package = unstable.pkgs.nixFlakes;
+    package = pkgs.nixFlakes;
     extraOptions = ''
       experimental-features = nix-command flakes
     '';
@@ -99,6 +98,7 @@ in
     #xdg.configFile."nvim/coc-settings.json".source = "${dotfiles}/coc-settings.json";
     xdg.configFile."nvim/coc-settings.json".source = ./coc-settings.json;
   };
+
 
   boot.kernelModules = [
     "i2c-dev"
@@ -132,29 +132,29 @@ in
     virt-manager
     # Misc programs
     unstable.firefox
-    filelight gimp kcalc libreoffice mumble earlyoom dfeet unstable.nix-index keepassxc wireshark vlc
-    gwenview kdeApplications.kdeconnect-kde partition-manager ark
+    filelight gimp kcalc libreoffice mumble earlyoom dfeet nix-index keepassxc wireshark vlc
+    gwenview libsForQt5.kdeconnect-kde partition-manager ark
     # Qt Creator
-    unstable.qtcreator cmake gnumake unstable.qt512.full
+    qtcreator cmake gnumake qt512.full
     tmux
     # notify-send
     libnotify
     glxinfo qutebrowser 
-    unstable.openrgb sgtpuzzles obs-studio pavucontrol unstable.mpv
+    openrgb sgtpuzzles obs-studio pavucontrol mpv
     # Development
     direnv
-    #unstable.libsForQt5.full unstable.qtcreator gnumake
+    #libsForQt5.full qtcreator gnumake
     git gdb cabal2nix cabal-install nodejs # For coc-nvim
-    android-studio gcc manpages nix-prefetch-git ccache entr
-    # ghc from unstable so it's in sync with HLS
-    unstable.ghc unstable.nix-bundle
-    unstable.haskellPackages.haskell-language-server clang-tools
-    unstable.rnix-lsp
+    /*android-studio*/ gcc man-pages nix-prefetch-git ccache entr
+    # ghc from so it's in sync with HLS
+    ghc nix-bundle
+    haskellPackages.haskell-language-server clang-tools
+    rnix-lsp
     # For neovim clipboard
     xclip
-    (unstable.neovim.override {
+    (neovim.override {
       configure = {
-        packages.myPlugins = with unstable.vimPlugins; {
+        packages.myPlugins = with vimPlugins; {
 	  # Seems vim-nix includes filetype detection
           start = [ coc-nvim coc-java nerdtree gruvbox vim-nix nerdcommenter vim-qml /*auto-session*/ ];
           opt = [];
@@ -173,6 +173,7 @@ in
     };
   }; 
   programs.tmux.extraConfig = ''set -g mouse on'';
+  #programs.tmux.plugins = [ pkgs.tmuxPlugins.resurrect ];
   programs.wireshark.enable = true;
 
   nixpkgs.config.allowUnfree = true;
