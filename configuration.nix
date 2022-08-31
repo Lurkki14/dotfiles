@@ -173,7 +173,7 @@ in
     };
   }; 
   programs.tmux.extraConfig = ''set -g mouse on'';
-  #programs.tmux.plugins = [ pkgs.tmuxPlugins.resurrect ];
+  programs.tmux.plugins = [ pkgs.tmuxPlugins.resurrect ];
   programs.wireshark.enable = true;
 
   nixpkgs.config.allowUnfree = true;
