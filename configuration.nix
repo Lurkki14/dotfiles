@@ -135,7 +135,7 @@ in
     filelight gimp kcalc libreoffice mumble earlyoom dfeet nix-index keepassxc wireshark vlc
     gwenview libsForQt5.kdeconnect-kde partition-manager ark
     # Qt Creator
-    qtcreator cmake gnumake qt512.full
+    qtcreator cmake gnumake qt5.full
     tmux
     # notify-send
     libnotify
