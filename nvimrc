@@ -8,8 +8,8 @@ inoremap <silent><expr> <Tab>
 \ <SID>check_back_space() ? "\<Tab>" :
 \ coc#refresh()
 
-# Automatic symbol info on hover
-# Has a small problem of calling doHover even if there is a diagnostic for symbol under cursor
+" Automatic symbol info on hover
+" Has a small problem of calling doHover even if there is a diagnostic for symbol under cursor
 function DoCocHover()
 	if g:coc_service_initialized && CocHasProvider('hover')
 		call CocActionAsync('doHover')
