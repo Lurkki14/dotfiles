@@ -7,6 +7,17 @@ inoremap <silent><expr> <Tab>
 \ pumvisible() ? "\<C-n>" :
 \ <SID>check_back_space() ? "\<Tab>" :
 \ coc#refresh()
+
+# Automatic symbol info on hover
+# Has a small problem of calling doHover even if there is a diagnostic for symbol under cursor
+function DoCocHover()
+	if g:coc_service_initialized && CocHasProvider('hover')
+		call CocActionAsync('doHover')
+	endif
+endfunction
+autocmd CursorHold * call DoCocHover()
+set updatetime=100
+
 autocmd Filetype haskell setlocal expandtab tabstop=2 shiftwidth=2 softtabstop=2
 autocmd Filetype qml setlocal expandtab tabstop=4 shiftwidth=4 softtabstop=4
 autocmd Filetype json setlocal expandtab tabstop=2 shiftwidth=2 softtabstop=2
