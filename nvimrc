@@ -9,6 +9,7 @@ inoremap <silent><expr> <Tab>
 \ coc#refresh()
 autocmd Filetype haskell setlocal expandtab tabstop=2 shiftwidth=2 softtabstop=2
 autocmd Filetype qml setlocal expandtab tabstop=4 shiftwidth=4 softtabstop=4
+autocmd Filetype json setlocal expandtab tabstop=2 shiftwidth=2 softtabstop=2
 set statusline=%<%f\ %h%m%r%=%-14.(%l,%c%V%)\ %{&filetype}\ %P
 set mouse=a
 colorscheme gruvbox
