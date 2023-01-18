@@ -183,6 +183,9 @@ in
   # Define on which hard drive you want to install Grub.
   boot.loader.grub.device = "/dev/sda";
 
+  # Longest service start/stop seems to be /home/jussi/HDD mountpoint at around 3 seconds
+  systemd.extraConfig = "DefaultTimeoutStopSec=15s";
+
   # Set your time zone.
   time.timeZone = "Europe/Helsinki";
 
