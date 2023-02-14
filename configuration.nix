@@ -133,7 +133,7 @@ in
     # Misc programs
     unstable.firefox
     filelight gimp kcalc libreoffice mumble earlyoom dfeet nix-index keepassxc wireshark vlc
-    gwenview libsForQt5.kdeconnect-kde partition-manager ark qdirstat
+    gwenview libsForQt5.kdeconnect-kde partition-manager ark qdirstat retext
     # Qt Creator
     qtcreator cmake gnumake qt5.full
     tmux
