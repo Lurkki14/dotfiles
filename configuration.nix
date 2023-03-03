@@ -167,7 +167,10 @@ in
   virtualisation.libvirtd.enable = true;
 
   programs.bash = {
-    interactiveShellInit = ''eval "$(direnv hook bash)"'';
+    interactiveShellInit = ''
+      eval "$(direnv hook bash)"
+      EDITOR="nvim"
+      '';
     shellAliases = {
       withUnstable = "NIX_PATH=nixpkgs=${unstableUrl}";
     };
