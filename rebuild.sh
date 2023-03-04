@@ -1,4 +1,4 @@
-pinnedCommit="6c6409e965a6c883677be7b9d87a95fab6c3472e"
+pinnedCommit="3c5319ad3aa51551182ac82ea17ab1c6b0f0df89"
 nixpkgsUrlFromCommit="https://github.com/NixOS/nixpkgs/archive/$pinnedCommit.tar.gz"
 
 
