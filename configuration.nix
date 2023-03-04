@@ -222,7 +222,6 @@ in
 
   zramSwap = {
     enable = true;
-    numDevices = 1;
     memoryPercent = 70;
   };
 
