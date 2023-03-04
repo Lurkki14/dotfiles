@@ -156,7 +156,7 @@ in
       configure = {
         packages.myPlugins = with vimPlugins; {
 	  # Seems vim-nix includes filetype detection
-          start = [ coc-nvim coc-java nerdtree gruvbox vim-nix nerdcommenter vim-qml /*auto-session*/ ];
+          start = [ coc-nvim coc-java nerdtree gruvbox vim-nix nerdcommenter vim-qml haskell-vim ];
           opt = [];
         };
         customRC = (builtins.readFile ./nvimrc);
