@@ -31,6 +31,7 @@ autocmd Filetype json setlocal expandtab tabstop=2 shiftwidth=2 softtabstop=2
 set statusline=%<%f\ %h%m%r%=%-14.(%l,%c%V%)\ %{&filetype}\ %P
 set mouse=a
 colorscheme gruvbox-material
+let g:haskell_indent_disable=1
 " Make cuts go to black hole since cutting is rarer than deletion
 nnoremap d "_d
 vnoremap d "_d
