@@ -22,8 +22,7 @@ function DoCocHover()
 		call CocActionAsync('doHover')
 	endif
 endfunction
-autocmd CursorHold * call DoCocHover()
-set updatetime=100
+nnoremap <silent> k :call DoCocHover()<CR>
 
 autocmd Filetype haskell setlocal expandtab tabstop=2 shiftwidth=2 softtabstop=2
 autocmd Filetype qml setlocal expandtab tabstop=4 shiftwidth=4 softtabstop=4
