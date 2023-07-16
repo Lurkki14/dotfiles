@@ -142,7 +142,7 @@ in
     glxinfo qutebrowser 
     openrgb sgtpuzzles obs-studio pavucontrol mpv
     # Development
-    direnv
+    direnv ripgrep
     #libsForQt5.full qtcreator gnumake
     git gdb cabal2nix cabal-install nodejs # For coc-nvim
     /*android-studio*/ gcc man-pages nix-prefetch-git ccache entr
