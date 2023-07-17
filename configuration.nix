@@ -170,11 +170,13 @@ in
     interactiveShellInit = ''
       eval "$(direnv hook bash)"
       EDITOR="nvim"
+      FZF_COMPLETION_TRIGGER='@'
       '';
     shellAliases = {
       withUnstable = "NIX_PATH=nixpkgs=${unstableUrl}";
     };
-  }; 
+  };
+  programs.fzf.fuzzyCompletion = true;
   programs.tmux.extraConfig = ''set -g mouse on'';
   programs.tmux.plugins = [ pkgs.tmuxPlugins.resurrect ];
   programs.wireshark.enable = true;
