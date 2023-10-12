@@ -112,10 +112,13 @@ in
   };
 
   fileSystems."/home/jussi/HDD" = {
-    #device = "/dev/sdb6";
     device = "/dev/disk/by-uuid/22f45770-d4e6-4ee7-8c8b-b578942105ee";
-    #device = "22f45770-d4e6-4ee7-8c8b-b578942105ee";
     fsType = "btrfs";
+  };
+
+  fileSystems."/home/jussi/SSD" = {
+    device = "/dev/disk/by-uuid/099bca2b-824b-488b-a139-66af6c356a51";
+    fsType = "ext4";
   };
 
   #environment.etc."dbus-1/foo".text = "test";
