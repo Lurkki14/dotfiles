@@ -13,8 +13,7 @@ let
 
   home-manager = builtins.fetchGit {
     url = "https://github.com/nix-community/home-manager.git";
-    rev = "07c347bb50994691d7b0095f45ebd8838cf6bc38";
-    ref = "release-23.05";
+    rev = "f92a54fef4eacdbe86b0a2054054dd58b0e2a2a4";
   };
 
   dotfiles = builtins.fetchGit {
@@ -134,7 +133,7 @@ in
     # Needs libvirtd
     virt-manager
     # Misc programs
-    unstable.firefox
+    firefox
     filelight gimp kcalc libreoffice mumble earlyoom dfeet nix-index keepassxc wireshark vlc
     gwenview libsForQt5.kdeconnect-kde partition-manager ark qdirstat retext aegisub
     # Qt Creator
@@ -143,7 +142,7 @@ in
     # notify-send
     libnotify
     glxinfo qutebrowser 
-    openrgb sgtpuzzles obs-studio pavucontrol mpv
+    openrgb sgt-puzzles obs-studio pavucontrol mpv
     # Development
     direnv ripgrep
     #libsForQt5.full qtcreator gnumake
