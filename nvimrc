@@ -29,6 +29,7 @@ autocmd Filetype cabal setlocal expandtab tabstop=2 shiftwidth=2 softtabstop=2
 autocmd Filetype qml setlocal expandtab tabstop=4 shiftwidth=4 softtabstop=4
 autocmd Filetype json setlocal expandtab tabstop=2 shiftwidth=2 softtabstop=2
 autocmd Filetype meson setlocal noexpandtab tabstop=8 shiftwidth=8
+autocmd Filetype cs setlocal expandtab tabstop=4 shiftwidth=4 softtabstop=4
 set statusline=%<%f\ %h%m%r%=%-14.(%l,%c%V%)\ %{&filetype}\ %P
 set mouse=a
 colorscheme gruvbox-material
